@@ -1,5 +1,6 @@
 /target
 /build
+/.env
 
 *.bin
 *.uf2
