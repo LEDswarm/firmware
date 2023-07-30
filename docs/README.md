@@ -1,3 +1,5 @@
+![banner](https://ghoust.s3.fr-par.scw.cloud/ledswarm_banner.svg)
+
 # ledswarm_firmware_esp32c3
 
 ## Dev Containers
