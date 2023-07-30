@@ -5,7 +5,6 @@ use std::time::Duration;
 use smart_leds_trait::{SmartLedsWrite, White};
 use ws2812_esp32_rmt_driver::driver::color::LedPixelColorGrbw32;
 use ws2812_esp32_rmt_driver::{LedPixelEsp32Rmt, RGBW8};
-use colors_transform::{Hsl, Color};
 
 use esp_idf_hal::i2c::*;
 use esp_idf_hal::peripherals::Peripherals;
@@ -43,18 +42,19 @@ fn main() -> ! {
 
     let mut average = vec![0.0; 10];
     let mut index = 0;
-    let mut current_magnitude = 0.0;
+    let mut current_magnitude;
     let mut previous_magnitude = 0.0;
 
-    let mut isRed = false;
+    let _is_red = false;
 
     loop {
         // Read acceleration
         let accel = accelerometer.accel_norm().unwrap();
 
-        previous_magnitude = current_magnitude;
         current_magnitude = (accel.x.powf(2.0) + accel.y.powf(2.0) + accel.z.powf(2.0)).sqrt();
         average[index] = (current_magnitude - previous_magnitude).abs();
+
+        previous_magnitude = current_magnitude;
 
         let delta = average.iter().sum::<f32>() / average.len() as f32;
         let rounded_delta = round(delta, 2);
