@@ -40,12 +40,12 @@ fn main() -> ! {
     let led_pin = 20;
     let mut ws2812 = LedPixelEsp32Rmt::<RGBW8, LedPixelColorGrbw32>::new(0, led_pin).unwrap();
 
-    let mut average = vec![0.0; 10];
+    let mut average = vec![0.0; 5];
     let mut index = 0;
     let mut current_magnitude;
     let mut previous_magnitude = 0.0;
 
-    let _is_red = false;
+    let mut stay_red = false;
 
     loop {
         // Read acceleration
@@ -57,23 +57,31 @@ fn main() -> ! {
         previous_magnitude = current_magnitude;
 
         let delta = average.iter().sum::<f32>() / average.len() as f32;
-        let rounded_delta = round(delta, 2);
-        let threshold = 0.7;
-        let brightness = 12;
+        let rounded_delta = round(delta, 1);
+        let threshold = 0.6;
+        let brightness = 16;
 
-        println!("{}", rounded_delta);
+        //println!("{}", rounded_delta);
 
         let red = brightness - (brightness as f32 * (1.0 - rounded_delta / threshold)) as u8;
         let green = (brightness as f32 * (1.0 - rounded_delta / threshold)) as u8;
 
-        // println!("red: {}", red);
-        // println!("green: {}", green);
+        //println!("red: {}", red);
+        //println!("green: {}", green);
 
         //println!("Hue: {}", hue);
-
-        let pixels = std::iter::repeat(RGBW8::from((red, green, 0, White(0)))).take(25);
+        if stay_red {
+            let pixels = std::iter::repeat(RGBW8::from((brightness, 0, 0, White(0)))).take(25);
+            ws2812.write(pixels).unwrap();
+        } else {
+            let pixels = std::iter::repeat(RGBW8::from((red, green, 0, White(0)))).take(25);
+            ws2812.write(pixels).unwrap();
+        }
         //let pixels = std::iter::repeat(RGBW8::from((0, 10, 0, White(0)))).take(25);
-        ws2812.write(pixels).unwrap();
+
+        if red > brightness - 2 {
+            stay_red = true;
+        }
 
         if index < average.len() - 1 {
             index += 1;
