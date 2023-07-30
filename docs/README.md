@@ -1,5 +1,9 @@
 ![banner](https://ghoust.s3.fr-par.scw.cloud/ledswarm_banner.svg)
 
+Firmware code for controllers in the ESP32 ecosystem.
+
+This repository is set up with `esp-idf` and `esp-idf-hal`, so it's' possible to use the `std` library more or less like you would use it on a normal Linux system. The firmware is responsible for driving the seven RGBW neopixels while sending and receiving WebSocket messages and reading values off the integrated ADXL343 accelerometer.
+
 # ledswarm_firmware_esp32c3
 
 ## Dev Containers
