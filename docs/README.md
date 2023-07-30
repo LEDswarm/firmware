@@ -1,8 +1,14 @@
 ![banner](https://ghoust.s3.fr-par.scw.cloud/ledswarm_banner.svg)
 
-Firmware code for controllers in the ESP32 ecosystem.
+# What's this?
 
-This repository is set up with `esp-idf` and `esp-idf-hal`, so it's' possible to use the `std` library more or less like you would use it on a normal Linux system. The firmware is responsible for driving the seven RGBW neopixels while sending and receiving WebSocket messages and reading values off the integrated ADXL343 accelerometer.
+This project provides firmware code for game controllers, enabling them to drive LEDs, read sensor data and interact with their environment using the network.
+
+More specifically, this repository contains a Rust project which uses `esp-idf` to implement firmware for ESP32 controller boards, like the Xiao ESP32-C3 used in internal testing. The RMT module of the boards is used to efficiently drive a NeoPixel Jewel with seven RGBW LEDs (SK6812). An ADXL343 accelerometer and a 128x64 OLED display are attached to the I2C bus.
+
+Firmware code for controllers in the ESP32 ecosystem based on `esp-idf`.
+
+This embedded code drives a NeoPixel Jewel while reading values off the integrated ADXL343 accelerometer and interacts with the WebSocket base station.
 
 # ledswarm_firmware_esp32c3
 
