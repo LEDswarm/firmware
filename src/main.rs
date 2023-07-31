@@ -2,21 +2,18 @@
 use std::thread::sleep;
 use std::time::Duration;
 
-use smart_leds_trait::{SmartLedsWrite, White};
-use ws2812_esp32_rmt_driver::driver::color::LedPixelColorGrbw32;
-use ws2812_esp32_rmt_driver::{LedPixelEsp32Rmt, RGBW8};
-
 use esp_idf_hal::i2c::*;
 use esp_idf_hal::peripherals::Peripherals;
 use esp_idf_hal::prelude::*;
 
+pub mod led;
+pub mod moving_average;
+
+use led::{Led, LedConfig};
+use moving_average::MovingAverage;
+
 use adxl343::Adxl343;
 use adxl343::accelerometer::Accelerometer;
-
-fn round(x: f32, decimals: u32) -> f32 {
-    let y = 10i32.pow(decimals) as f32;
-    (x * y).round() / y
-}
 
 fn main() -> ! {
     // It is necessary to call this function once. Otherwise some patches to the runtime
@@ -34,16 +31,16 @@ fn main() -> ! {
     let i2c    = I2cDriver::new(i2c, sda, scl, &config).unwrap();
 
     let mut accelerometer = Adxl343::new(i2c).unwrap();
+    let mut moving_avg    = MovingAverage::new();
 
     // LEDs
 
-    let led_pin = 20;
-    let mut ws2812 = LedPixelEsp32Rmt::<RGBW8, LedPixelColorGrbw32>::new(0, led_pin).unwrap();
+    // let led_pin = 20;
+    // let mut ws2812 = LedPixelEsp32Rmt::<RGBW8, LedPixelColorGrbw32>::new(0, led_pin).unwrap();
 
-    let mut average = vec![0.0; 5];
-    let mut index = 0;
-    let mut current_magnitude;
-    let mut previous_magnitude = 0.0;
+    let mut led = Led::new(LedConfig {
+        pin: 20,
+    });
 
     let mut stay_red = false;
 
@@ -51,58 +48,30 @@ fn main() -> ! {
         // Read acceleration
         let accel = accelerometer.accel_norm().unwrap();
 
-        current_magnitude = (accel.x.powf(2.0) + accel.y.powf(2.0) + accel.z.powf(2.0)).sqrt();
-        average[index] = (current_magnitude - previous_magnitude).abs();
-
-        previous_magnitude = current_magnitude;
-
-        let delta = average.iter().sum::<f32>() / average.len() as f32;
-        let rounded_delta = round(delta, 1);
+        moving_avg.add(accel);
+        let delta = moving_avg.get_average_delta();
+        println!("{}", delta);
         let threshold = 0.6;
         let brightness = 5;
 
-        //println!("{}", rounded_delta);
-
-        let red = brightness - (brightness as f32 * (1.0 - rounded_delta / threshold)) as u8;
-        let green = (brightness as f32 * (1.0 - rounded_delta / threshold)) as u8;
+        let red = brightness - (brightness as f32 * (1.0 - delta / threshold)) as u8;
+        let green = (brightness as f32 * (1.0 - delta / threshold)) as u8;
 
         //println!("red: {}", red);
         //println!("green: {}", green);
 
         //println!("Hue: {}", hue);
         if stay_red {
-            let pixels = std::iter::repeat(RGBW8::from((brightness, 0, 0, White(0)))).take(25);
-            ws2812.write(pixels).unwrap();
+            led.set_rgbw(brightness, 0, 0, 0);
         } else {
-            let pixels = std::iter::repeat(RGBW8::from((red, green, 0, White(0)))).take(25);
-            ws2812.write(pixels).unwrap();
+            led.set_rgbw(red, green, 0, 0);
         }
-        //let pixels = std::iter::repeat(RGBW8::from((0, 10, 0, White(0)))).take(25);
 
         if red > brightness - 2 {
             stay_red = true;
         }
 
-        if index < average.len() - 1 {
-            index += 1;
-        } else {
-            index = 0;
-        }
-
-        sleep(Duration::from_millis(40));
-        /*
-        let pixels = std::iter::repeat(RGBW8::from((0, 6, 0, White(0)))).take(25);
-        ws2812.write(pixels).unwrap();
-        sleep(Duration::from_millis(1000));
-
-        let pixels = std::iter::repeat(RGBW8::from((0, 0, 6, White(0)))).take(25);
-        ws2812.write(pixels).unwrap();
-        sleep(Duration::from_millis(1000));
-
-        let pixels = std::iter::repeat(RGBW8::from((0, 0, 0, White(6)))).take(25);
-        ws2812.write(pixels).unwrap();
-        sleep(Duration::from_millis(1000));
-        */
+        sleep(Duration::from_millis(30));
     }
 }
 
