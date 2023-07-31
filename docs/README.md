@@ -6,10 +6,6 @@ This software enables controllers to drive LEDs, read sensor data and interact w
 
 [`esp-idf`](https://github.com/esp-rs/esp-idf-hal) is used to compile the firmware with [`std`](https://doc.rust-lang.org/std/) support for ESP32 controller boards, like the [Xiao ESP32-C3](https://wiki.seeedstudio.com/XIAO_ESP32C3_Getting_Started/) used in internal testing. The RMT module serves as an efficient way to drive a NeoPixel Jewel with seven RGBW LEDs (SK6812). An ADXL343 accelerometer and a 128x64 OLED display are attached to the I2C bus to read data and provide visual feedback.
 
-Firmware code for controllers in the ESP32 ecosystem based on `esp-idf`.
-
-This embedded code drives a NeoPixel Jewel while reading values off the integrated ADXL343 accelerometer and interacts with the WebSocket base station.
-
 # ledswarm_firmware_esp32c3
 
 ## Dev Containers
