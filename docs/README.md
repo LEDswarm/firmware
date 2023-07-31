@@ -2,7 +2,7 @@
 
 # What's this?
 
-[`ledswarm_firmware`](https://github.com/LEDswarm/firmware) is a firmware for microcontrollers written in Rust which enables swarm controllers to drive LEDs, read sensor data and interact with their environment. 
+[`firmware`](https://github.com/LEDswarm/firmware) is an executable Rust binary for microcontrollers, which enables swarm controllers to drive LEDs, read sensor data and interact with their environment. 
 
 [`esp-idf`](https://github.com/esp-rs/esp-idf-hal) provides the base of the firmware with standard library support for ESP32 controller boards. The RMT module is used to efficiently drive a seven-pixel array of RGBW LEDs while an accelerometer and a small OLED display are attached to the I2C bus to provide sensor data and visual feedback.
 
