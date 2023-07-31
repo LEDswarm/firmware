@@ -4,7 +4,7 @@
 
 This software enables controllers to drive LEDs, read sensor data and interact with their environment. 
 
-[`esp-idf`](https://github.com/esp-rs/esp-idf-hal) is used to compile the firmware with standard library support for ESP32 controller boards. The RMT module is used to efficiently drive seven-pixel array of RGBW LEDs (SK6812). Two other peripherals, an ADXL343 accelerometer and a 128x64 OLED display, are attached to the I2C bus to provide sensor data and visual feedback.
+[`esp-idf`](https://github.com/esp-rs/esp-idf-hal) is used to compile the firmware with standard library support for ESP32 controller boards. The RMT module is used to efficiently drive a seven-pixel array of RGBW LEDs (SK6812). An accelerometer and a small OLED display are attached to the I2C bus to provide sensor data and visual feedback.
 
 # ledswarm_firmware_esp32c3
 
