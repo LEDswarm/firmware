@@ -6,6 +6,8 @@
 
 `esp-idf` provides the base of the firmware with standard library support for ESP32 controller boards. The [remote control module (RMT)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/rmt.html) is used to efficiently drive a seven-pixel array of RGBW LEDs while an accelerometer and a small OLED display are attached to the I2C bus to provide sensor data and visual feedback.
 
+Furthermore, `esp-idf-svc` will be used to implement a WebSocket connection the server, which has to be maintained constantly to provide a consistent game.
+
 # ledswarm_firmware_esp32c3
 
 ## Dev Containers
