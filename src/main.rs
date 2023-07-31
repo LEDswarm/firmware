@@ -59,7 +59,7 @@ fn main() -> ! {
         let delta = average.iter().sum::<f32>() / average.len() as f32;
         let rounded_delta = round(delta, 1);
         let threshold = 0.6;
-        let brightness = 16;
+        let brightness = 5;
 
         //println!("{}", rounded_delta);
 
