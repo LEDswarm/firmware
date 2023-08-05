@@ -17,13 +17,13 @@ impl MovingAverage {
     }
 
     /// Get the vector magnitude for the given accelerometer reading.
-    fn get_magnitude(accel: accelerometer::vector::F32x3) -> f32 {
-        (accel.x.powf(2.0) + accel.y.powf(2.0) + accel.z.powf(2.0)).sqrt()
+    fn get_magnitude(&self, vector: accelerometer::vector::F32x3) -> f32 {
+        (vector.x.powf(2.0) + vector.y.powf(2.0) + vector.z.powf(2.0)).sqrt()
     }
 
     /// Add a new measurement to the ring buffer.
     pub fn add(&mut self, vector: accelerometer::vector::F32x3) {
-        self.current_magnitude = (vector.x.powf(2.0) + vector.y.powf(2.0) + vector.z.powf(2.0)).sqrt();
+        self.current_magnitude = self.get_magnitude(vector);
         self.buffer[self.index] = (self.current_magnitude - self.previous_magnitude).abs();
         self.previous_magnitude = self.current_magnitude;
         self.advance();
