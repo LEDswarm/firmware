@@ -5,6 +5,12 @@ use std::time::Duration;
 use esp_idf_hal::i2c::*;
 use esp_idf_hal::peripherals::Peripherals;
 use esp_idf_hal::prelude::*;
+use esp_idf_svc::timer::EspTaskTimerService;
+use esp_idf_svc::wifi::{AsyncWifi, EspWifi};
+use esp_idf_svc::{eventloop::EspSystemEventLoop, nvs::EspDefaultNvsPartition};
+use embedded_svc::wifi::{AuthMethod, ClientConfiguration, Configuration};
+use futures::executor::block_on;
+use log::info;
 
 pub mod led;
 pub mod moving_average;
@@ -15,12 +21,21 @@ use moving_average::MovingAverage;
 use adxl343::Adxl343;
 use adxl343::accelerometer::Accelerometer;
 
+/// We use the following authentication details for the network in order to honor
+/// the work of our fellow hacker and friend [overflo](https://github.com/overflo23).
+const SSID: &str     = "ghoust";
+const PASSWORD: &str = "ghoust";
+
 fn main() -> ! {
     // It is necessary to call this function once. Otherwise some patches to the runtime
     // implemented by esp-idf-sys might not link properly. See https://github.com/esp-rs/esp-idf-template/issues/71
     esp_idf_sys::link_patches();
 
+    let sys_loop = EspSystemEventLoop::take().unwrap();
+    let nvs = EspDefaultNvsPartition::take().unwrap();
+    let timer_service = EspTaskTimerService::new().unwrap();
     let peripherals = Peripherals::take().unwrap();
+
     let i2c = peripherals.i2c0;
     let sda = peripherals.pins.gpio6;
     let scl = peripherals.pins.gpio7;
@@ -32,6 +47,22 @@ fn main() -> ! {
 
     let mut accelerometer = Adxl343::new(i2c).unwrap();
     let mut moving_avg    = MovingAverage::new();
+
+    // Wi-Fi
+
+    let mut wifi = AsyncWifi::wrap(
+        EspWifi::new(peripherals.modem, sys_loop.clone(), Some(nvs)).unwrap(),
+        sys_loop,
+        timer_service,
+    ).unwrap();
+
+    block_on(connect_wifi(&mut wifi)).unwrap();
+
+    let ip_info = wifi.wifi().sta_netif().get_ip_info().unwrap();
+
+    info!("Wifi DHCP info: {:?}", ip_info);
+    info!("Connected!");
+
 
     // LEDs
 
@@ -73,6 +104,29 @@ fn main() -> ! {
 
         sleep(Duration::from_millis(30));
     }
+}
+
+async fn connect_wifi(wifi: &mut AsyncWifi<EspWifi<'static>>) -> anyhow::Result<()> {
+    let wifi_configuration: Configuration = Configuration::Client(ClientConfiguration {
+        ssid: SSID.into(),
+        bssid: None,
+        auth_method: AuthMethod::WPA2Personal,
+        password: PASSWORD.into(),
+        channel: None,
+    });
+
+    wifi.set_configuration(&wifi_configuration)?;
+
+    wifi.start().await?;
+    info!("Wifi started");
+
+    wifi.connect().await?;
+    info!("Wifi connected");
+
+    wifi.wait_netif_up().await?;
+    info!("Wifi netif up");
+
+    Ok(())
 }
 
 /*
