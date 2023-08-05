@@ -8,6 +8,14 @@
 
 Furthermore, `esp-idf-svc` will be used in the near future to implement a WebSocket connection to the server so that it's possible to configure and reset controller values in real-time in a graphical interface on various platforms.
 
+# Troubleshooting
+
+If you happen to have an error like the following, make sure you have no additional version of Rust installed via Homebrew or any other package manager. Only a `rustup` version must be present.
+
+```
+error: the option `Z` is only accepted on the nightly compiler
+```
+
 # ledswarm_firmware_esp32c3
 
 ## Dev Containers
