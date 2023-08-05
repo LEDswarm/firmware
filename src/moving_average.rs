@@ -23,8 +23,18 @@ impl MovingAverage {
 
     /// Add a new measurement to the ring buffer.
     pub fn add(&mut self, vector: accelerometer::vector::F32x3) {
+        // Get the length of the current 3D vector
         self.current_magnitude = self.get_magnitude(vector);
+
+        // Calculate the absolute change between the current and the last magnitude
+        // to get the jerk (the change of acceleration over time).
+        //
+        // This provides an easy way to sense how much the controller is moving, while also
+        // auto-calibrating at the same time, removing the biases in the accelerometer 
+        // readings. This is one of the main interaction points for game modes.
         self.buffer[self.index] = (self.current_magnitude - self.previous_magnitude).abs();
+
+        // Prepare for next iteration
         self.previous_magnitude = self.current_magnitude;
         self.advance();
     }
