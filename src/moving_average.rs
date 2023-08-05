@@ -1,4 +1,4 @@
-/// A ring buffer which stores and averages delta values between adjacent accelerometer readings.
+/// A ring buffer which averages accelerometer readings to provide the change in acceleration.
 pub struct MovingAverage {
     buffer: Vec<f32>,
     index: usize,
@@ -39,11 +39,12 @@ impl MovingAverage {
         self.advance();
     }
 
+    /// Calculate the average of all buffer entries.
     pub fn get_average_delta(&self) -> f32 {
         self::round(self.buffer.iter().sum::<f32>() / self.buffer.len() as f32, 2)
     }
 
-    /// Increase the index by one if possibly, or wrap back around.
+    /// Increase the index by one if possible, or wrap back around.
     fn advance(&mut self) {
         if self.index < self.buffer.len() - 1 {
             self.index += 1;
