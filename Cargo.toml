@@ -45,6 +45,7 @@ embedded-graphics = "0.8.0"
 ssd1306 = "0.8.0"
 palette = "0.7.2"
 colors-transform = "0.2.11"
+futures = "0.3.28"
 
 [patch.crates-io]
 esp-idf-svc = { git="https://github.com/esp-rs/esp-idf-svc"}
