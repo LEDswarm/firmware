@@ -4,9 +4,9 @@
 
 [`firmware`](https://github.com/LEDswarm/firmware) is an executable Rust binary for microcontrollers, which enables swarm controllers to drive LEDs, read sensor data and interact with their environment. 
 
-`esp-idf` provides the base of the firmware with standard library support for ESP32 controller boards. On top of that, the [remote control module (RMT)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/rmt.html) and the I2C bus are used to drive a seven-pixel array of RGBW LEDs, an accelerometer and a small OLED display, providing sensor data and visual feedback.
+`esp-idf` provides the base of the firmware with standard library support for controller boards. On top of that, the [remote control module (RMT)](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/peripherals/rmt.html) found on ESP32 boards is used as an efficient way to drive the seven-pixel array of RGBW LEDs while an accelerometer and a small OLED display provide sensor data and visual feedback.
 
-Furthermore, `esp-idf-svc` will be used to implement a WebSocket connection the server, which has to be maintained constantly to provide a consistent game.
+Furthermore, `esp-idf-svc` will be used in the near future to implement a WebSocket connection to the server so that it's possible to configure and reset controller values in real-time in a graphical interface on various platforms.
 
 # ledswarm_firmware_esp32c3
 
